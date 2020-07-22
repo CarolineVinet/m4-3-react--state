@@ -17,7 +17,7 @@ const App = (props) => {
       <GlobalStyles />
       <Wrapper>
         <Typehead
-          suggestions={data.books}
+          data={data.books}
           handleSelect={(suggestion) => {
             window.alert(suggestion);
           }}
