@@ -86,5 +86,3 @@ const Typehead = ({ data, handleSelect }) => {
 };
 
 export default Typehead;
-
-//absolute on ul and input
