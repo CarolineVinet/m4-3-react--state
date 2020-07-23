@@ -8,6 +8,12 @@ const Button = styled.button`
   border-radius: 5px;
 `;
 
+const Category = styled.span`
+  font-style: italic;
+  color: purple;
+  font-size: 14px;
+`;
+
 const Suggestion = styled.li`
   padding: 10px;
   padding-top: 15px;
@@ -18,6 +24,10 @@ const Suggestion = styled.li`
   &:hover {
     background-color: #f1f1bc;
   }
+`;
+
+const Prediction = styled.span`
+  font-weight: bold;
 `;
 
 const SuggestionList = styled.ul`
@@ -41,16 +51,12 @@ const Typehead = ({ data, handleSelect }) => {
         return book.title.toLowerCase().includes(text.toLowerCase());
       });
 
-      let newArray = filteredBooksArray.map((book) => {
-        return (
-          <Suggestion key={book.id} onClick={() => handleSelect(book.title)}>
-            {book.title}
-          </Suggestion>
-        );
-      });
+      // let newArray = filteredBooksArray.map((book) => {
 
-      console.log(newArray);
-      setDisplaySuggestions(newArray);
+      // });
+
+      console.log(filteredBooksArray);
+      setDisplaySuggestions(filteredBooksArray);
     } else {
       setDisplaySuggestions([]);
     }
@@ -81,7 +87,31 @@ const Typehead = ({ data, handleSelect }) => {
         Clear
       </Button>{" "}
       {displaySuggestions.length > 0 && text.length > 1 && (
-        <SuggestionList>{displaySuggestions}</SuggestionList>
+        <SuggestionList>
+          {displaySuggestions.map((book, index, originalArray) => {
+            console.log("suggestions", originalArray);
+            const bookTitle = book.title;
+            const indexOfText = bookTitle.indexOf(text);
+            const firstHalf = bookTitle.slice(0, indexOfText + text.length + 1);
+
+            const secondHalf = bookTitle.slice(
+              firstHalf.length,
+              bookTitle.length
+            );
+            return (
+              <Suggestion
+                key={book.id}
+                onClick={() => handleSelect(book.title)}
+              >
+                <span>
+                  {firstHalf}
+                  <Prediction>{secondHalf}</Prediction>
+                </span>{" "}
+                in <Category>{book.categoryId}</Category>
+              </Suggestion>
+            );
+          })}
+        </SuggestionList>
       )}
     </label>
   );
