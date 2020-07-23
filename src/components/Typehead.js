@@ -21,9 +21,9 @@ const Suggestion = styled.li`
   font-size: 16px;
   align-content: center;
   background-color: white;
-  &:hover {
+  /* &:hover {
     background-color: #f1f1bc;
-  }
+  } */
 `;
 
 const Prediction = styled.span`
@@ -44,16 +44,16 @@ const InputField = styled.div`
 const Typehead = ({ data, handleSelect }) => {
   const [text, setText] = React.useState("");
   const [displaySuggestions, setDisplaySuggestions] = React.useState([]);
+  const [selectedSuggestionIndex, setSelectedSuggestionIndex] = React.useState(
+    0
+  );
   const books = data;
+
   const findSuggestions = (text) => {
     if (text !== "") {
       let filteredBooksArray = books.filter((book) => {
         return book.title.toLowerCase().includes(text.toLowerCase());
       });
-
-      // let newArray = filteredBooksArray.map((book) => {
-
-      // });
 
       console.log(filteredBooksArray);
       setDisplaySuggestions(filteredBooksArray);
@@ -75,6 +75,10 @@ const Typehead = ({ data, handleSelect }) => {
           console.log(event.key);
           if (event.key === "Enter") {
             handleSelect(text);
+          } else if (event.key === "ArrowUp") {
+            setSelectedSuggestionIndex(selectedSuggestionIndex - 1);
+          } else if (event.key === "ArrowDown") {
+            setSelectedSuggestionIndex(selectedSuggestionIndex + 1);
           }
         }}
         value={text}
@@ -89,11 +93,16 @@ const Typehead = ({ data, handleSelect }) => {
       {displaySuggestions.length > 0 && text.length > 1 && (
         <SuggestionList>
           {displaySuggestions.map((book, index, originalArray) => {
+            let isSelected = false;
+
+            if (selectedSuggestionIndex === index) {
+              isSelected = true;
+            }
+
             console.log("suggestions", originalArray);
             const bookTitle = book.title;
             const indexOfText = bookTitle.indexOf(text);
             const firstHalf = bookTitle.slice(0, indexOfText + text.length + 1);
-
             const secondHalf = bookTitle.slice(
               firstHalf.length,
               bookTitle.length
@@ -102,6 +111,12 @@ const Typehead = ({ data, handleSelect }) => {
               <Suggestion
                 key={book.id}
                 onClick={() => handleSelect(book.title)}
+                onMouseOver={() => setSelectedSuggestionIndex(index)}
+                style={{
+                  background: isSelected
+                    ? "hsla(50deg, 100%, 80%, 0.25)"
+                    : "transparent",
+                }}
               >
                 <span>
                   {firstHalf}
