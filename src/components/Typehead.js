@@ -10,7 +10,6 @@ const Button = styled.button`
 
 const Suggestion = styled.li`
   padding: 10px;
-  margin: 10px;
   padding-top: 15px;
   line-height: 1;
   font-size: 16px;
@@ -23,6 +22,7 @@ const Suggestion = styled.li`
 
 const SuggestionList = styled.ul`
   position: absolute;
+  padding: 10px;
   width: 450px;
   box-shadow: 2px 2px 5px grey;
 `;
@@ -35,22 +35,22 @@ const Typehead = ({ data, handleSelect }) => {
   const [text, setText] = React.useState("");
   const [displaySuggestions, setDisplaySuggestions] = React.useState([]);
   const books = data;
-  const setUp = (text) => {
+  const findSuggestions = (text) => {
     if (text !== "") {
-      let textQuery = books.map((book) => {
-        console.log("Text entered: ", text);
-
-        if (book.title.toLowerCase().includes(text.toLowerCase())) {
-          console.log("Text entered found in: ", book.title);
-          return (
-            <Suggestion key={book.id} onClick={() => handleSelect(book.title)}>
-              {book.title}
-            </Suggestion>
-          );
-        }
+      let filteredBooksArray = books.filter((book) => {
+        return book.title.toLowerCase().includes(text.toLowerCase());
       });
 
-      setDisplaySuggestions(textQuery);
+      let newArray = filteredBooksArray.map((book) => {
+        return (
+          <Suggestion key={book.id} onClick={() => handleSelect(book.title)}>
+            {book.title}
+          </Suggestion>
+        );
+      });
+
+      console.log(newArray);
+      setDisplaySuggestions(newArray);
     } else {
       setDisplaySuggestions([]);
     }
@@ -62,7 +62,7 @@ const Typehead = ({ data, handleSelect }) => {
         type="text"
         onChange={(event) => {
           setText(event.target.value);
-          setUp(event.target.value);
+          findSuggestions(event.target.value);
         }}
         style={{ fontSize: 14 }}
         onKeyDown={(event) => {
@@ -80,7 +80,9 @@ const Typehead = ({ data, handleSelect }) => {
       >
         Clear
       </Button>{" "}
-      <SuggestionList>{displaySuggestions}</SuggestionList>
+      {displaySuggestions.length > 0 && text.length > 1 && (
+        <SuggestionList>{displaySuggestions}</SuggestionList>
+      )}
     </label>
   );
 };
